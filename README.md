@@ -19,7 +19,8 @@ cd 02-proyecto-unidad/itc-erp-implantacion
 python servidor.py
 ```
 
-Abrir `http://127.0.0.1:8080/panel.html`. El panel permite cambiar el perfil
+Abrir `http://127.0.0.1:8080/suite.html` para recorrer el mockup completo de
+la suite ERP. El panel de implantación queda en `panel.html` y permite cambiar el perfil
 sin perder los datos locales, ejecutar la verificación y usar los módulos
 habilitados: alta y consulta de clientes, incidencias y equipos. El perfil
 `comercial` activa CRM, ventas y facturación; `soporte` activa CRM,

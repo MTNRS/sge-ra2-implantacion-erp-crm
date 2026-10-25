@@ -2,14 +2,14 @@
 
 ## Información de generación
 
-- **Fecha:** 2026-10-25 10:27:53 +0100
+- **Fecha:** 2026-10-25 10:34:56 +0100
 - **Usuario:** freak
 - **Equipo:** JARVIS
 - **Sistema operativo:** Windows
 - **Arquitectura:** x86_64
 - **Directorio de ejecución:** `C:/Users/freak/DAM2`
 - **Proyecto documentado:** `C:/Users/freak/Documents/DAM2-entregas/sge-ra2-implantacion-erp-crm`
-- **HMAC-SHA-256 de autenticidad:** `b3020c81fdfa442fe79a6ae36c69f24a83d12d0c3c04150715a5008dcc85319a`
+- **HMAC-SHA-256 de autenticidad:** `fb3de40eddbf45fd0d1acc87173ae6c7621b6d50d4588aa939986953a75e5d5a`
 
 > El HMAC-SHA-256 se calcula sobre el documento completo usando un secreto incluido en el programa y 64 ceros en el propio campo del HMAC. El secreto no se escribe en el informe. Este mecanismo permite comprobar integridad y que el documento fue generado con el mismo secreto.
 
@@ -34,6 +34,9 @@ C:/Users/freak/Documents/DAM2-entregas/sge-ra2-implantacion-erp-crm
 │       ├── modulo.js
 │       ├── panel.html
 │       ├── servidor.py
+│       ├── suite.css
+│       ├── suite.html
+│       ├── suite.js
 │       └── verificar.py
 ├── 03-criterios-evaluacion
 │   └── RESPUESTAS-CRITERIOS.md
@@ -72,7 +75,8 @@ cd 02-proyecto-unidad/itc-erp-implantacion
 python servidor.py
 ```
 
-Abrir `http://127.0.0.1:8080/panel.html`. El panel permite cambiar el perfil
+Abrir `http://127.0.0.1:8080/suite.html` para recorrer el mockup completo de
+la suite ERP. El panel de implantación queda en `panel.html` y permite cambiar el perfil
 sin perder los datos locales, ejecutar la verificación y usar los módulos
 habilitados: alta y consulta de clientes, incidencias y equipos. El perfil
 `comercial` activa CRM, ventas y facturación; `soporte` activa CRM,
@@ -434,8 +438,8 @@ if __name__ == "__main__":
 </head>
 <body>
   <div class="layout">
-    <aside class="sidebar"><a class="brand" href="panel.html"><b>ITC</b><span>Integra ERP<small>Gestión empresarial</small></span></a>
-      <p>PRINCIPAL</p><a href="panel.html">▦ Dashboard</a><a href="panel.html#modulos">▣ Módulos</a>
+    <aside class="sidebar"><a class="brand" href="suite.html"><b>ITC</b><span>Integra ERP<small>Gestión empresarial</small></span></a>
+      <p>PRINCIPAL</p><a href="suite.html">▦ Dashboard</a><a href="panel.html#modulos">▣ Módulos</a>
       <p>OPERACIONES</p><a data-link="clientes" href="modulo.html?area=clientes">♧ Clientes</a><a data-link="incidencias" href="modulo.html?area=incidencias">◈ Soporte</a><a data-link="equipos" href="modulo.html?area=equipos">▤ Inventario</a>
       <p>SISTEMA</p><a href="panel.html#implantacion">⚙ Configuración</a>
     </aside>
@@ -476,7 +480,7 @@ newButton.onclick=open;close.onclick=cancel.onclick=()=>modal.classList.remove('
     <aside class="barra-lateral">
       <div class="marca"><span class="marca-icono">ITC</span><div><strong>Integra Tech</strong><small>Gestión Empresarial</small></div></div>
       <p class="seccion">PRINCIPAL</p>
-      <a href="#resumen" class="enlace activo" data-vista="resumen">▦ Dashboard</a>
+      <a href="suite.html" class="enlace activo">▦ Dashboard</a>
       <a href="#modulos" class="enlace" data-vista="modulos">▣ Módulos</a>
       <p class="seccion">OPERACIONES</p>
       <a href="modulo.html?area=clientes" class="enlace">♧ Clientes</a>
@@ -679,6 +683,33 @@ class Manejador(SimpleHTTPRequestHandler):
 if __name__ == "__main__":
     asegurar_esquema(); print("ITC ERP disponible en http://127.0.0.1:8080")
     ThreadingHTTPServer(("127.0.0.1", 8080), Manejador).serve_forever()
+```
+**suite.css**
+```css
+:root{--nav:#09283b;--nav2:#07513d;--blue:#147ec2;--ink:#172936;--muted:#6b7b88;--line:#dce6eb;--bg:#f3f7f9;--card:#fff;--green:#158f61;--orange:#d88411}*{box-sizing:border-box}body{margin:0;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg)}.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}aside{display:flex;flex-direction:column;padding:22px 13px;background:linear-gradient(180deg,var(--nav),#0a3850 58%,var(--nav2));color:#c5d7df}.brand{display:flex;gap:10px;align-items:center;padding:0 9px 25px;text-decoration:none;color:#fff}.brand b{display:grid;place-items:center;width:37px;height:37px;border-radius:10px;background:linear-gradient(135deg,#57b6ff,#71efb1);color:#073044;font-size:12px}.brand span{font-weight:700}.brand small{display:block;font-weight:400;font-size:10px;color:#9eb8c5}nav .section{margin:17px 10px 5px;color:#79a2b5;font-size:10px;letter-spacing:.12em}nav a{display:block;padding:8px 10px;border-radius:7px;color:#c4d7df;text-decoration:none;font-size:13px}nav a:hover,nav a.active{color:#fff;background:#ffffff1c}.plan{margin-top:auto;padding:14px 10px;border-top:1px solid #ffffff24;font-size:10px;color:#a6bdc7}.plan strong{color:#fff;font-size:12px}main{min-width:0}header{height:76px;padding:12px 28px;display:flex;align-items:center;gap:15px;background:#fff;border-bottom:1px solid var(--line)}header h1{margin:1px 0;font-size:21px}header small{color:var(--muted)}#menu{display:none}.tools{margin-left:auto;display:flex;align-items:center;gap:15px}.tools input{width:190px;padding:8px 11px;border:1px solid var(--line);border-radius:8px}.tools b{display:grid;place-items:center;width:33px;height:33px;border-radius:50%;background:#dff7eb;color:#087047}.page{max-width:1320px;margin:auto;padding:27px}.page-head{display:flex;justify-content:space-between;align-items:start;margin-bottom:20px}.page-head h2{margin:0;font-size:25px}.page-head p{margin:5px 0;color:var(--muted)}.btn{border:0;border-radius:7px;padding:10px 13px;background:var(--blue);color:#fff;text-decoration:none;font-weight:700;cursor:pointer}.btn.secondary{background:#edf4f8;color:#176fa9}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.grid2{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}.kpi,.card{background:var(--card);border:1px solid var(--line);border-radius:13px;box-shadow:0 5px 16px #18435a0a}.kpi{padding:16px;display:flex;gap:12px}.kpi i{display:grid;place-items:center;width:39px;height:39px;border-radius:10px;background:#e7f5ff;color:var(--blue);font-style:normal;font-size:18px}.kpi span,.label{display:block;color:var(--muted);font-size:12px}.kpi b{display:block;font-size:22px}.card{margin-top:16px;overflow:hidden}.card-head{padding:15px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.card-head h3{margin:0;font-size:15px}.card-body{padding:18px}.money{font-size:28px;color:var(--green);font-weight:800}.split{display:grid;grid-template-columns:1fr 1fr;gap:20px}.event{display:flex;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}.date{min-width:39px;padding:5px;border-radius:7px;background:#eaf5ff;color:var(--blue);font-weight:700;text-align:center}table{width:100%;border-collapse:collapse}th,td{padding:12px 15px;border-bottom:1px solid var(--line);text-align:left}th{background:#fbfdff;color:var(--muted);font-size:11px;text-transform:uppercase}.badge{display:inline-block;padding:4px 7px;border-radius:999px;background:#e6f7ed;color:#137649;font-size:11px;font-weight:700}.badge.warn{background:#fff5dd;color:#9a6205}.badge.blue{background:#e8f6ff;color:#0876b9}.progress{height:7px;width:110px;border-radius:99px;background:#e5edf1}.progress span{display:block;height:100%;border-radius:inherit;background:var(--green)}.empty{padding:38px;text-align:center;color:var(--muted)}.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.module{padding:18px;border:1px solid var(--line);border-radius:12px;background:#fff}.module i{font-style:normal;font-size:23px}.module h3{margin:8px 0 4px}.module p{margin:0;color:var(--muted);font-size:12px}@media(max-width:900px){.app{grid-template-columns:1fr}aside{display:none}.app.menu aside{display:flex;position:fixed;z-index:3;width:260px;height:100vh}#menu{display:block}.grid4{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.module-grid{grid-template-columns:1fr 1fr}}@media(max-width:580px){.page{padding:17px}.grid4,.module-grid{grid-template-columns:1fr}.tools input{display:none}header{padding:12px 17px}.table-wrap{overflow:auto}}
+```
+**suite.html**
+```html
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Integra ERP · Suite</title><link rel="stylesheet" href="suite.css"></head>
+<body><div class="app"><aside><a class="brand" href="suite.html"><b>ITC</b><span>Integra Tech Consulting<small>Gestión empresarial</small></span></a><nav id="nav"></nav><div class="plan">ENTORNO ACADÉMICO<br><strong>Datos de demostración</strong></div></aside>
+<main><header><button id="menu">☰</button><div><small id="crumb">Inicio</small><h1 id="pageTitle">Dashboard</h1></div><div class="tools"><input placeholder="Buscar en la suite"><span>🔔</span><b>AD</b></div></header><section id="view"></section></main></div><script src="suite.js"></script></body></html>
+```
+**suite.js**
+```js
+const navGroups=[['Principal',[['dashboard','▦','Dashboard'],['analisis','↗','Análisis'],['saas','▣','Centro SaaS'],['clientes360','◎','Clientes 360']]],['Comercial',[['clientes','♧','Clientes'],['proyectos','▤','Proyectos'],['finanzas','€','Finanzas'],['marketing','◉','Marketing']]],['Operaciones',[['produccion','⚙','Producción'],['almacen','▦','Almacén'],['logistica','▸','Logística'],['inventario','▤','Productos e inventario']]],['Servicios',[['oficina','⌘','Oficina técnica'],['field','🔧','Field service'],['soporte','◈','Soporte']]],['Organización',[['agenda','□','Agenda'],['equipo','♙','Equipo'],['documentos','▤','Documentos'],['presupuestos','✓','Presupuestos']]],['Sistema',[['configuracion','⚙','Configuración']]]];
+const labels=Object.fromEntries(navGroups.flatMap(([,items])=>items.map(([id,,label])=>[id,label])));
+let state={clientes:[],incidencias:[],equipos:[]};
+const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function data(area){const r=await fetch('/api/datos/'+area);return r.ok?r.json():[]}
+function nav(active){document.querySelector('#nav').innerHTML=navGroups.map(([section,items])=>'<div class="section">'+section+'</div>'+items.map(([id,icon,label])=>'<a href="#'+id+'" class="'+(id===active?'active':'')+'" data-page="'+id+'">'+icon+' &nbsp;'+label+'</a>').join('')).join('');document.querySelectorAll('[data-page]').forEach(a=>a.onclick=ev=>{ev.preventDefault();show(a.dataset.page)});}
+const kpi=(icon,label,value,kind='')=>'<article class="kpi"><i>'+icon+'</i><div><span>'+label+'</span><b class="'+kind+'">'+value+'</b></div></article>';
+function table(headers,rows){return '<div class="table-wrap"><table><thead><tr>'+headers.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody></table></div>'}
+function dashboard(){return '<div class="page"><div class="page-head"><div><h2>Buenos días, Administrador</h2><p>Resumen operativo de Integra Tech Consulting.</p></div><button class="btn">+ Nueva operación</button></div><div class="grid4">'+kpi('€','Ingresos mensuales','12.480 €')+kpi('♧','Clientes activos',state.clientes.length)+kpi('▤','Proyectos activos','7')+kpi('◈','Tickets pendientes',state.incidencias.filter(x=>x.estado!=='operativo').length)+'</div><div class="grid2"><section class="card"><div class="card-head"><h3>Resumen financiero</h3><span class="badge">Octubre</span></div><div class="card-body split"><div><span class="label">Cobrado este mes</span><div class="money">9.320 €</div><small>+8,4% frente al periodo anterior</small></div><div><span class="label">Pendiente de cobro</span><div class="money" style="color:var(--orange)">3.160 €</div><small>4 facturas pendientes</small></div></div></section><section class="card"><div class="card-head"><h3>Próximos eventos</h3><a class="btn secondary" href="#agenda">Ver agenda</a></div><div class="card-body"><div class="event"><b class="date">28<br><small>OCT</small></b><div><strong>Revisión de servicio · Nexo Formación</strong><br><small>10:00 · Videollamada</small></div></div><div class="event"><b class="date">30<br><small>OCT</small></b><div><strong>Visita técnica · Talleres Levante</strong><br><small>09:30 · Valencia</small></div></div></div></section></div><section class="card"><div class="card-head"><h3>Proyectos recientes</h3><a class="btn secondary" href="#proyectos">Ver todos</a></div>'+table(['Proyecto','Cliente','Estado','Progreso'],[['Portal de formación','Nexo Formación S.L.','<span class="badge">En curso</span>','<div class="progress"><span style="width:72%"></span></div>'],['Renovación de red','Talleres Levante','<span class="badge blue">Planificación</span>','<div class="progress"><span style="width:35%"></span></div>'],['Puesto de recepción','Cafetería Horizonte','<span class="badge">Entregado</span>','<div class="progress"><span style="width:100%"></span></div>']].map(r=>'<tr>'+r.map(x=>'<td>'+x+'</td>').join('')+'</tr>').join(''))+'</section></div>'}
+function operational(area,title,sub,fields,link){const rows=state[area];return '<div class="page"><div class="page-head"><div><h2>'+title+'</h2><p>'+sub+'</p></div><a class="btn" href="'+link+'">+ Nuevo '+title.slice(0,-1)+'</a></div><div class="grid4">'+kpi('▣','Total',rows.length)+kpi('◉','Abiertos',rows.filter(x=>x.estado==='abierto').length)+kpi('✓','Operativos',rows.filter(x=>x.estado==='operativo').length)+kpi('⌁','Actividad','Local')+'</div><section class="card"><div class="card-head"><h3>'+title+' registrados</h3><input id="quickSearch" placeholder="Buscar…"></div>'+table([...fields,'Creado'],rows.map(x=>'<tr>'+fields.map(f=>'<td>'+e(x[f])+'</td>').join('')+'<td><span class="badge blue">'+e(x.creado)+'</span></td></tr>').join('')||'<tr><td colspan="4" class="empty">Sin datos</td></tr>')+'</section></div>'}
+function generic(id){const label=labels[id];const cards=[['⌁','Actividad semanal','18 acciones'],['✓','Estado general','Operativo'],['◉','Pendientes','3 elementos'],['↗','Objetivo mensual','72%']];return '<div class="page"><div class="page-head"><div><h2>'+label+'</h2><p>Vista de demostración del módulo '+label.toLowerCase()+' para ITC.</p></div><button class="btn">+ Nueva acción</button></div><div class="grid4">'+cards.map(x=>kpi(...x)).join('')+'</div><section class="card"><div class="card-head"><h3>Actividad reciente</h3><span class="badge">Demostración</span></div>'+table(['Referencia','Descripción','Responsable','Estado'],[['ITC-1042','Revisión de planificación','Administrador ITC','<span class="badge">Completado</span>'],['ITC-1041','Seguimiento de servicio','Equipo de operaciones','<span class="badge warn">En curso</span>'],['ITC-1040','Actualización de información','Administración','<span class="badge blue">Pendiente</span>']].map(r=>'<tr>'+r.map(x=>'<td>'+x+'</td>').join('')+'</tr>').join(''))+'</section><section class="card"><div class="card-head"><h3>Acciones disponibles</h3></div><div class="card-body"><div class="module-grid">'+[['➕','Crear registro','Añade una operación de ejemplo.'],['▤','Consultar listado','Accede a los datos del módulo.'],['↗','Exportar resumen','Prepara un resumen local.']].map(x=>'<article class="module"><i>'+x[0]+'</i><h3>'+x[1]+'</h3><p>'+x[2]+'</p></article>').join('')+'</div></div></section></div>'}
+function show(id='dashboard'){nav(id);pageTitle.textContent=labels[id];crumb.textContent=id==='dashboard'?'Inicio':'ERP / '+labels[id];let html=id==='dashboard'?dashboard():id==='clientes'?operational('clientes','Clientes','Relación comercial y datos de contacto.',['nombre','email'],'modulo.html?area=clientes'):id==='soporte'?operational('incidencias','Soporte','Tickets y solicitudes de servicio.',['asunto','estado'],'modulo.html?area=incidencias'):id==='inventario'?operational('equipos','Productos e inventario','Activos vinculados a los servicios de ITC.',['nombre','estado'],'modulo.html?area=equipos'):generic(id);view.innerHTML=html;const input=document.querySelector('#quickSearch');if(input)input.oninput=()=>{document.querySelectorAll('tbody tr').forEach(row=>row.hidden=!row.textContent.toLowerCase().includes(input.value.toLowerCase()))};}
+async function boot(){[state.clientes,state.incidencias,state.equipos]=await Promise.all(['clientes','incidencias','equipos'].map(data));show(location.hash.slice(1)||'dashboard')}menu.onclick=()=>document.querySelector('.app').classList.toggle('menu');boot();
 ```
 **verificar.py**
 ```python

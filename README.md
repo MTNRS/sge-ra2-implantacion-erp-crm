@@ -25,6 +25,10 @@ habilitados: alta y consulta de clientes, incidencias y equipos. El perfil
 `comercial` activa CRM, ventas y facturación; `soporte` activa CRM,
 incidencias e inventario.
 
+Las áreas operativas se abren como módulos independientes: `modulo.html?area=clientes`,
+`modulo.html?area=incidencias` y `modulo.html?area=equipos`. Cada una incluye
+sus indicadores, búsqueda, tabla y formulario modal de alta.
+
 ## Relación con el RA1
 
 El RA1 definía el caso de uso, los módulos posibles y una arquitectura inicial

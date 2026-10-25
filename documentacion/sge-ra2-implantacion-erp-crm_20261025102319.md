@@ -2,14 +2,14 @@
 
 ## Información de generación
 
-- **Fecha:** 2026-10-25 10:19:29 +0100
+- **Fecha:** 2026-10-25 10:23:19 +0100
 - **Usuario:** freak
 - **Equipo:** JARVIS
 - **Sistema operativo:** Windows
 - **Arquitectura:** x86_64
 - **Directorio de ejecución:** `C:/Users/freak/DAM2`
 - **Proyecto documentado:** `C:/Users/freak/Documents/DAM2-entregas/sge-ra2-implantacion-erp-crm`
-- **HMAC-SHA-256 de autenticidad:** `94303a83779dcbc1f066270f1d86f8088bfffaedf1148244457ceee2db6079c0`
+- **HMAC-SHA-256 de autenticidad:** `5f5abb4b38e9e9ac6a2c9ba309e601d8c3dcca84b0a962ddfce0b8756dfc3b94`
 
 > El HMAC-SHA-256 se calcula sobre el documento completo usando un secreto incluido en el programa y 64 ceros en el propio campo del HMAC. El secreto no se escribe en el informe. Este mecanismo permite comprobar integridad y que el documento fue generado con el mismo secreto.
 
@@ -29,6 +29,9 @@ C:/Users/freak/Documents/DAM2-entregas/sge-ra2-implantacion-erp-crm
 │       ├── configuracion.json
 │       ├── estilos.css
 │       ├── instalar.py
+│       ├── modulo.css
+│       ├── modulo.html
+│       ├── modulo.js
 │       ├── panel.html
 │       ├── servidor.py
 │       └── verificar.py
@@ -74,6 +77,10 @@ sin perder los datos locales, ejecutar la verificación y usar los módulos
 habilitados: alta y consulta de clientes, incidencias y equipos. El perfil
 `comercial` activa CRM, ventas y facturación; `soporte` activa CRM,
 incidencias e inventario.
+
+Las áreas operativas se abren como módulos independientes: `modulo.html?area=clientes`,
+`modulo.html?area=incidencias` y `modulo.html?area=equipos`. Cada una incluye
+sus indicadores, búsqueda, tabla y formulario modal de alta.
 
 ## Relación con el RA1
 
@@ -394,6 +401,47 @@ if __name__ == "__main__":
         raise SystemExit(f"ERROR DE INSTALACIÓN: {error}")
 
 ```
+**modulo.css**
+```css
+:root{--nav:#072236;--blue:#168fe8;--line:#dce6eb;--muted:#667785;--bg:#f5f8fa}*{box-sizing:border-box}body{margin:0;font:14px system-ui;color:#1d2c39;background:var(--bg)}.layout{display:grid;grid-template-columns:245px 1fr;min-height:100vh}.sidebar{padding:22px 13px;background:linear-gradient(#071f31,#0a3448 65%,#07523d);color:#b8d0dc}.brand{display:flex;gap:10px;align-items:center;padding:0 8px 24px;color:#fff!important;font-size:16px!important}.brand b,.account b{display:grid;place-items:center;width:35px;height:35px;border-radius:10px;background:#72efb2;color:#073044}.brand small{display:block;color:#91adba;font-size:10px}.sidebar p{margin:18px 10px 7px;font-size:10px;letter-spacing:.12em;color:#77a1b5}.sidebar a{display:block;padding:10px;border-radius:8px;color:#b8d0dc;text-decoration:none}.sidebar a:hover,.sidebar a.active{background:#ffffff1c;color:white}header{height:76px;padding:13px 30px;background:white;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}header h1{margin:2px 0;font-size:20px}header small{color:var(--muted)}.account{display:flex;gap:8px;align-items:center}.account b{border-radius:50%}.content{padding:28px;max-width:1250px}.heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.heading h2{margin:0;font-size:25px}.heading p{margin:5px 0;color:var(--muted)}button{font:inherit;cursor:pointer;border:0;border-radius:7px;padding:9px 14px;background:var(--blue);color:#fff;font-weight:700}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.stat,.card{background:#fff;border:1px solid var(--line);border-radius:13px}.stat{padding:16px}.stat b{display:block;font-size:25px;color:#0874b8}.stat span{color:var(--muted);font-size:12px}.card{overflow:hidden}.card-head{display:flex;justify-content:space-between;align-items:center;padding:17px 20px;border-bottom:1px solid var(--line)}.card-head h3{margin:0}.card input{padding:8px;border:1px solid var(--line);border-radius:7px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{padding:13px 16px;border-bottom:1px solid var(--line);text-align:left}th{font-size:11px;text-transform:uppercase;color:var(--muted);background:#fbfdfe}.badge{display:inline-block;padding:4px 7px;border-radius:999px;background:#e8f6ff;color:#0874b8;font-size:12px}.modal-backdrop{display:none;position:fixed;inset:0;background:#071f3166;place-items:center}.modal-backdrop.open{display:grid}.modal{width:min(650px,92vw);background:#fff;border-radius:13px;overflow:hidden}.modal header{height:auto;padding:15px 20px}.modal header h3{margin:0}.modal header button{background:none;color:#40515e;font-size:24px;padding:0}.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:20px}.fields label{display:grid;gap:5px;color:var(--muted);font-size:12px;font-weight:700}.fields input,.fields select{padding:10px;border:1px solid var(--line);border-radius:7px;font:inherit}footer{display:flex;justify-content:flex-end;gap:10px;padding:15px 20px;border-top:1px solid var(--line)}footer button:first-child{background:#edf2f5;color:#344452}@media(max-width:800px){.layout{grid-template-columns:1fr}.sidebar{display:none}.stats{grid-template-columns:1fr 1fr}.content{padding:17px}}
+```
+**modulo.html**
+```html
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Módulo · Integra ERP</title><link rel="stylesheet" href="modulo.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar"><a class="brand" href="panel.html"><b>ITC</b><span>Integra ERP<small>Gestión empresarial</small></span></a>
+      <p>PRINCIPAL</p><a href="panel.html">▦ Dashboard</a><a href="panel.html#modulos">▣ Módulos</a>
+      <p>OPERACIONES</p><a data-link="clientes" href="modulo.html?area=clientes">♧ Clientes</a><a data-link="incidencias" href="modulo.html?area=incidencias">◈ Soporte</a><a data-link="equipos" href="modulo.html?area=equipos">▤ Inventario</a>
+      <p>SISTEMA</p><a href="panel.html#implantacion">⚙ Configuración</a>
+    </aside>
+    <main><header><div><small id="breadcrumb">ERP / Operaciones</small><h1 id="title">Cargando módulo…</h1></div><div class="account">Administrador ITC <b>AD</b></div></header>
+      <section class="content"><div class="heading"><div><h2 id="heading"></h2><p id="description"></p></div><button id="newButton">+ Nuevo</button></div>
+      <div id="stats" class="stats"></div>
+      <section class="card"><div class="card-head"><h3 id="tableTitle"></h3><input id="filter" placeholder="Buscar…"></div><div class="table-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div></section></section>
+    </main>
+  </div>
+  <div id="modal" class="modal-backdrop"><section class="modal"><header><h3 id="modalTitle"></h3><button id="close">×</button></header><form id="form"><div id="fields" class="fields"></div><footer><button type="button" id="cancel">Cancelar</button><button type="submit">Guardar</button></footer></form></section></div>
+  <script src="modulo.js"></script>
+</body></html>
+```
+**modulo.js**
+```js
+const area=new URLSearchParams(location.search).get('area')||'clientes';
+const config={clientes:{name:'Clientes',desc:'Relación comercial y datos de contacto',fields:[['nombre','Nombre o empresa','text'],['email','Correo electrónico','email']]},incidencias:{name:'Soporte',desc:'Gestión de tickets y solicitudes de servicio',fields:[['asunto','Asunto','text'],['estado','Estado','select']]},equipos:{name:'Inventario',desc:'Control de equipos y activos del servicio',fields:[['nombre','Equipo o activo','text'],['estado','Estado','select']]}};
+const meta=config[area]||config.clientes;let rows=[];
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(path,options={}){const r=await fetch(path,options),j=await r.json();if(!r.ok)throw Error(j.error);return j}
+function render(){const cols=meta.fields.map(f=>f[0]);document.title=`${meta.name} · Integra ERP`;title.textContent=meta.name;heading.textContent=meta.name;description.textContent=meta.desc;tableTitle.textContent=`${meta.name} registrados`;newButton.textContent=`+ Nuevo ${meta.name.slice(0,-1)||meta.name}`;document.querySelector('[data-link="'+area+'"]').classList.add('active');thead.innerHTML='<tr>'+cols.map(c=>'<th>'+esc(c)+'</th>').join('')+'<th>Creado</th></tr>';tbody.innerHTML=rows.filter(r=>Object.values(r).join(' ').toLowerCase().includes(filter.value.toLowerCase())).map(r=>'<tr>'+cols.map(c=>'<td>'+esc(r[c])+'</td>').join('')+'<td><span class="badge">'+esc(r.creado)+'</span></td></tr>').join('')||'<tr><td colspan="3">No hay registros todavía.</td></tr>';stats.innerHTML=`<article class="stat"><b>${rows.length}</b><span>Total registrados</span></article><article class="stat"><b>${rows.filter(r=>r.estado==='abierto').length}</b><span>Abiertos</span></article><article class="stat"><b>${rows.filter(r=>r.estado==='operativo').length}</b><span>Operativos</span></article><article class="stat"><b>Local</b><span>SQLite ITC</span></article>`;}
+function open(){modal.classList.add('open');modalTitle.textContent='Nuevo '+meta.name;fields.innerHTML=meta.fields.map(([n,l,t])=>t==='select'?'<label>'+l+'<select name="'+n+'"><option value="abierto">Abierto</option><option value="en revisión">En revisión</option><option value="operativo">Operativo</option></select></label>':'<label>'+l+'<input required name="'+n+'" type="'+t+'"></label>').join('')}
+async function load(){try{rows=await api('/api/datos/'+area);render()}catch(e){description.textContent=e.message;newButton.disabled=true;render()}}
+newButton.onclick=open;close.onclick=cancel.onclick=()=>modal.classList.remove('open');filter.oninput=render;form.onsubmit=async e=>{e.preventDefault();await api('/api/datos/'+area,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(form)))});modal.classList.remove('open');load()};load();
+```
 **panel.html**
 ```html
 <!doctype html>
@@ -412,9 +460,9 @@ if __name__ == "__main__":
       <a href="#resumen" class="enlace activo" data-vista="resumen">▦ Dashboard</a>
       <a href="#modulos" class="enlace" data-vista="modulos">▣ Módulos</a>
       <p class="seccion">OPERACIONES</p>
-      <a href="#operativa" class="enlace" data-vista="clientes">♧ Clientes</a>
-      <a href="#operativa" class="enlace" data-vista="incidencias">◈ Soporte</a>
-      <a href="#operativa" class="enlace" data-vista="equipos">▤ Inventario</a>
+      <a href="modulo.html?area=clientes" class="enlace">♧ Clientes</a>
+      <a href="modulo.html?area=incidencias" class="enlace">◈ Soporte</a>
+      <a href="modulo.html?area=equipos" class="enlace">▤ Inventario</a>
       <p class="seccion">SISTEMA</p>
       <a href="#implantacion" class="enlace" data-vista="configuracion">⚙ Configuración</a>
       <div class="plan">Plan académico<br><strong>Entorno local</strong></div>

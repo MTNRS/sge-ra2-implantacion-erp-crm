@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Módulo · Integra ERP</title><link rel="stylesheet" href="modulo.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar"><a class="brand" href="panel.html"><b>ITC</b><span>Integra ERP<small>Gestión empresarial</small></span></a>
+      <p>PRINCIPAL</p><a href="panel.html">▦ Dashboard</a><a href="panel.html#modulos">▣ Módulos</a>
+      <p>OPERACIONES</p><a data-link="clientes" href="modulo.html?area=clientes">♧ Clientes</a><a data-link="incidencias" href="modulo.html?area=incidencias">◈ Soporte</a><a data-link="equipos" href="modulo.html?area=equipos">▤ Inventario</a>
+      <p>SISTEMA</p><a href="panel.html#implantacion">⚙ Configuración</a>
+    </aside>
+    <main><header><div><small id="breadcrumb">ERP / Operaciones</small><h1 id="title">Cargando módulo…</h1></div><div class="account">Administrador ITC <b>AD</b></div></header>
+      <section class="content"><div class="heading"><div><h2 id="heading"></h2><p id="description"></p></div><button id="newButton">+ Nuevo</button></div>
+      <div id="stats" class="stats"></div>
+      <section class="card"><div class="card-head"><h3 id="tableTitle"></h3><input id="filter" placeholder="Buscar…"></div><div class="table-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div></section></section>
+    </main>
+  </div>
+  <div id="modal" class="modal-backdrop"><section class="modal"><header><h3 id="modalTitle"></h3><button id="close">×</button></header><form id="form"><div id="fields" class="fields"></div><footer><button type="button" id="cancel">Cancelar</button><button type="submit">Guardar</button></footer></form></section></div>
+  <script src="modulo.js"></script>
+</body></html>

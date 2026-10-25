@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ITC ERP · Estado de implantación</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; background:#111827; color:#e5e7eb; }
+    body { max-width: 920px; margin: 0 auto; padding: 2rem; }
+    header { border-bottom: 1px solid #374151; margin-bottom: 2rem; }
+    h1 { margin-bottom: .25rem; } .subtitulo { color:#9ca3af; }
+    .aviso { padding: 1rem; border-left: 4px solid #f59e0b; background:#1f2937; }
+    .rejilla { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:1rem; margin:1rem 0; }
+    article { background:#1f2937; padding:1rem; border-radius:.5rem; }
+    .activo { color:#86efac; } .inactivo { color:#9ca3af; } code { color:#c4b5fd; }
+  </style>
+</head>
+<body>
+  <header>
+    <p>INTEGRA TECH CONSULTING · IMPLANTACIÓN LOCAL</p>
+    <h1>Estado de la instalación</h1>
+    <p class="subtitulo">Panel de lectura para comprobar el perfil y los módulos configurados.</p>
+  </header>
+  <main>
+    <p id="estado" class="aviso">Leyendo <code>configuracion.json</code>…</p>
+    <section>
+      <h2>Perfiles disponibles</h2>
+      <div id="perfiles" class="rejilla"></div>
+    </section>
+    <section>
+      <h2>Módulos</h2>
+      <div id="modulos" class="rejilla"></div>
+    </section>
+    <section class="aviso">
+      <strong>Comprobación completa:</strong> ejecuta <code>python verificar.py</code>.
+      El panel informa de la configuración preparada; el verificador revisa la base SQLite creada por el instalador.
+    </section>
+  </main>
+  <script>
+    fetch('configuracion.json')
+      .then(respuesta => {
+        if (!respuesta.ok) throw new Error('No se pudo leer la configuración');
+        return respuesta.json();
+      })
+      .then(configuracion => {
+        document.querySelector('#estado').textContent = `Empresa de demostración: ${configuracion.empresa}. Moneda: ${configuracion.moneda}.`;
+        document.querySelector('#perfiles').innerHTML = Object.entries(configuracion.perfiles)
+          .map(([nombre, modulos]) => `<article><strong>${nombre}</strong><p>${modulos.join(', ')}</p></article>`).join('');
+        document.querySelector('#modulos').innerHTML = Object.entries(configuracion.modulos)
+          .map(([codigo, nombre]) => `<article><strong>${codigo}</strong><p>${nombre}</p><span class="activo">Disponible para configurar</span></article>`).join('');
+      })
+      .catch(error => { document.querySelector('#estado').textContent = `Incidencia: ${error.message}`; });
+  </script>
+</body>
+</html>
+

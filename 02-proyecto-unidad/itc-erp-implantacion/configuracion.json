@@ -1,0 +1,17 @@
+{
+  "empresa": "Integra Tech Consulting (demostración)",
+  "moneda": "EUR",
+  "zona_horaria": "Europe/Madrid",
+  "perfiles": {
+    "comercial": ["crm", "ventas", "facturacion"],
+    "soporte": ["crm", "incidencias", "inventario"]
+  },
+  "modulos": {
+    "crm": "Clientes y oportunidades",
+    "ventas": "Presupuestos y pedidos",
+    "facturacion": "Facturas y cobros",
+    "inventario": "Existencias y equipos",
+    "incidencias": "Soporte técnico"
+  }
+}
+

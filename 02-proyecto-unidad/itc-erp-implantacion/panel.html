@@ -11,14 +11,14 @@
     <aside class="barra-lateral">
       <div class="marca"><span class="marca-icono">ITC</span><div><strong>Integra Tech</strong><small>Gestión Empresarial</small></div></div>
       <p class="seccion">PRINCIPAL</p>
-      <a href="#resumen" class="enlace activo">▦ Dashboard</a>
-      <a href="#modulos" class="enlace">▣ Módulos</a>
+      <a href="#resumen" class="enlace activo" data-vista="resumen">▦ Dashboard</a>
+      <a href="#modulos" class="enlace" data-vista="modulos">▣ Módulos</a>
       <p class="seccion">OPERACIONES</p>
-      <a href="#modulos" class="enlace">♧ Clientes</a>
-      <a href="#modulos" class="enlace">◈ Soporte</a>
-      <a href="#modulos" class="enlace">▤ Inventario</a>
+      <a href="#operativa" class="enlace" data-vista="clientes">♧ Clientes</a>
+      <a href="#operativa" class="enlace" data-vista="incidencias">◈ Soporte</a>
+      <a href="#operativa" class="enlace" data-vista="equipos">▤ Inventario</a>
       <p class="seccion">SISTEMA</p>
-      <a href="#implantacion" class="enlace activo">⚙ Configuración</a>
+      <a href="#implantacion" class="enlace" data-vista="configuracion">⚙ Configuración</a>
       <div class="plan">Plan académico<br><strong>Entorno local</strong></div>
     </aside>
     <main class="contenido">
@@ -52,6 +52,10 @@
         <section id="modulos" class="tarjeta">
           <div class="tarjeta-cabecera"><div><h3>Módulos instalados</h3><p class="texto-secundario">Vista del perfil que tendría disponible la organización.</p></div><span id="perfilActual" class="insignia neutra">Sin perfil</span></div>
           <div id="listaModulos" class="rejilla-modulos"><p class="pendiente">No hay módulos activados.</p></div>
+        </section>
+        <section id="operativa" class="tarjeta" aria-live="polite">
+          <div class="tarjeta-cabecera"><div><h3>Operativa del módulo</h3><p class="texto-secundario">Selecciona Clientes, Soporte o Inventario en el menú lateral.</p></div></div>
+          <div id="zonaOperativa" class="zona-operativa"><p class="pendiente">Todavía no has seleccionado un área operativa.</p></div>
         </section>
         <section class="tarjeta">
           <div class="tarjeta-cabecera"><h3>Operaciones realizadas</h3><span class="texto-secundario">Registro de instalación</span></div>

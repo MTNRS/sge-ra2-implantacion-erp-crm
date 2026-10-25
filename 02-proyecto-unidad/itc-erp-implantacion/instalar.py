@@ -33,6 +33,9 @@ def instalar(perfil):
             CREATE TABLE modulos (codigo TEXT PRIMARY KEY, nombre TEXT NOT NULL, activo INTEGER NOT NULL);
             CREATE TABLE usuarios (usuario TEXT PRIMARY KEY, rol TEXT NOT NULL);
             CREATE TABLE operaciones (momento TEXT NOT NULL, accion TEXT NOT NULL, detalle TEXT NOT NULL);
+            CREATE TABLE clientes (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT NOT NULL, email TEXT NOT NULL, creado TEXT NOT NULL);
+            CREATE TABLE incidencias (id INTEGER PRIMARY KEY AUTOINCREMENT, asunto TEXT NOT NULL, estado TEXT NOT NULL, creado TEXT NOT NULL);
+            CREATE TABLE equipos (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT NOT NULL, estado TEXT NOT NULL, creado TEXT NOT NULL);
             """
         )
         conexion.executemany(

@@ -15,8 +15,15 @@ locales.
    de la operación.
 4. Se ejecutó `python verificar.py` para revisar las tablas, el perfil, los tres
    módulos activos y la bitácora de instalación.
-5. Se abrió `panel.html` mediante un servidor HTTP local para revisar los
-   perfiles y los módulos definidos en la configuración.
+5. Se abrió `panel.html` mediante el servidor local para revisar los perfiles,
+   los módulos definidos y registrar datos de demostración.
+
+## Operativa comprobada
+
+Desde el panel se ha comprobado el alta de un cliente, una incidencia y un
+equipo ficticios. Cada alta se guarda en SQLite y deja una entrada en la
+bitácora. Al pasar temporalmente al perfil `comercial`, el área de soporte se
+bloqueó; al volver a `soporte` recuperó el acceso sin perder los registros.
 
 ## Segunda instalación adaptada
 
@@ -31,5 +38,6 @@ y cobros en lugar de la gestión de incidencias.
 | Se vuelve a ejecutar el instalador | Se detiene sin sobrescribir la base existente. |
 | Se indica un perfil no válido | `argparse` limita los valores a `comercial` y `soporte`. |
 | No existe la base al verificar | El verificador informa de que debe ejecutarse el instalador. |
-| Se abre el panel como archivo | Se debe usar `python -m http.server` para que `fetch()` pueda leer el JSON. |
+| Se abre el panel como archivo | Se debe usar `python servidor.py` para que las rutas de datos estén disponibles. |
+| Se intenta abrir un área no activa | El panel informa del módulo deshabilitado y el servidor rechaza la petición. |
 

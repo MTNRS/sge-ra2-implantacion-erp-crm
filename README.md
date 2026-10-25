@@ -16,15 +16,13 @@ Se necesita Python 3, incluido `sqlite3` (biblioteca estándar).
 
 ```powershell
 cd 02-proyecto-unidad/itc-erp-implantacion
-python instalar.py --perfil soporte
-python verificar.py
-python -m http.server 8080
+python servidor.py
 ```
 
-Abrir `http://127.0.0.1:8080/panel.html`. Para repetir la demostración con otro
-perfil, eliminar manualmente `data/itc_erp.sqlite` y ejecutar de nuevo el
-instalador. El perfil `comercial` instala CRM, ventas y facturación; `soporte`
-instala CRM, incidencias e inventario.
+Abrir `http://127.0.0.1:8080/panel.html`. El asistente permite instalar un
+perfil desde la interfaz y ejecutar la verificación. El perfil `comercial`
+instala CRM, ventas y facturación; `soporte` instala CRM, incidencias e
+inventario.
 
 ## Relación con el RA1
 

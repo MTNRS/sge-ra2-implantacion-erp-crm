@@ -2,14 +2,14 @@
 
 ## Información de generación
 
-- **Fecha:** 2026-10-25 09:35:54 +0100
+- **Fecha:** 2026-10-25 10:02:44 +0100
 - **Usuario:** freak
 - **Equipo:** JARVIS
 - **Sistema operativo:** Windows
 - **Arquitectura:** x86_64
 - **Directorio de ejecución:** `C:/Users/freak/DAM2`
 - **Proyecto documentado:** `C:/Users/freak/Documents/DAM2-entregas/sge-ra2-implantacion-erp-crm`
-- **HMAC-SHA-256 de autenticidad:** `5b989706202a8730da9866a0b9fb1e36256ec65dae2a190a813a4e9856b46bf9`
+- **HMAC-SHA-256 de autenticidad:** `ec88361838411aa14dac5a8b99aea29e7193efc85a70ddfc3f931463c652087e`
 
 > El HMAC-SHA-256 se calcula sobre el documento completo usando un secreto incluido en el programa y 64 ceros en el propio campo del HMAC. El secreto no se escribe en el informe. Este mecanismo permite comprobar integridad y que el documento fue generado con el mismo secreto.
 
@@ -28,6 +28,7 @@ C:/Users/freak/Documents/DAM2-entregas/sge-ra2-implantacion-erp-crm
 │       ├── configuracion.json
 │       ├── instalar.py
 │       ├── panel.html
+│       ├── servidor.py
 │       └── verificar.py
 ├── 03-criterios-evaluacion
 │   └── RESPUESTAS-CRITERIOS.md
@@ -63,15 +64,13 @@ Se necesita Python 3, incluido `sqlite3` (biblioteca estándar).
 
 ```powershell
 cd 02-proyecto-unidad/itc-erp-implantacion
-python instalar.py --perfil soporte
-python verificar.py
-python -m http.server 8080
+python servidor.py
 ```
 
-Abrir `http://127.0.0.1:8080/panel.html`. Para repetir la demostración con otro
-perfil, eliminar manualmente `data/itc_erp.sqlite` y ejecutar de nuevo el
-instalador. El perfil `comercial` instala CRM, ventas y facturación; `soporte`
-instala CRM, incidencias e inventario.
+Abrir `http://127.0.0.1:8080/panel.html`. El asistente permite instalar un
+perfil desde la interfaz y ejecutar la verificación. El perfil `comercial`
+instala CRM, ventas y facturación; `soporte` instala CRM, incidencias e
+inventario.
 
 ## Relación con el RA1
 
@@ -257,57 +256,142 @@ if __name__ == "__main__":
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ITC ERP · Estado de implantación</title>
+  <title>ITC ERP · Asistente de implantación</title>
   <style>
-    :root { color-scheme: dark; font-family: system-ui, sans-serif; background:#111827; color:#e5e7eb; }
-    body { max-width: 920px; margin: 0 auto; padding: 2rem; }
-    header { border-bottom: 1px solid #374151; margin-bottom: 2rem; }
-    h1 { margin-bottom: .25rem; } .subtitulo { color:#9ca3af; }
-    .aviso { padding: 1rem; border-left: 4px solid #f59e0b; background:#1f2937; }
-    .rejilla { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:1rem; margin:1rem 0; }
-    article { background:#1f2937; padding:1rem; border-radius:.5rem; }
-    .activo { color:#86efac; } .inactivo { color:#9ca3af; } code { color:#c4b5fd; }
+    :root { font-family:system-ui,sans-serif; color:#e5e7eb; background:#0f172a; }
+    body { max-width:1050px; margin:auto; padding:2rem; } header { border-bottom:1px solid #334155; margin-bottom:1.5rem; }
+    .etiqueta { color:#67e8f9; font-size:.8rem; letter-spacing:.12em; } .subtitulo,.muted { color:#94a3b8; }
+    .rejilla { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1rem; }
+    section { background:#172033; border:1px solid #334155; padding:1.25rem; border-radius:.6rem; }
+    button { background:#0891b2; border:0; padding:.7rem 1rem; border-radius:.35rem; color:white; cursor:pointer; font-weight:700; }
+    button:disabled { opacity:.45; cursor:not-allowed; } .ok { color:#86efac; } .fallo { color:#fca5a5; }
+    ul { padding-left:1.25rem; } #mensaje { min-height:1.5rem; }
   </style>
 </head>
 <body>
   <header>
-    <p>INTEGRA TECH CONSULTING · IMPLANTACIÓN LOCAL</p>
-    <h1>Estado de la instalación</h1>
-    <p class="subtitulo">Panel de lectura para comprobar el perfil y los módulos configurados.</p>
+    <p class="etiqueta">INTEGRA TECH CONSULTING · RA2</p>
+    <h1>Asistente de implantación ITC ERP</h1>
+    <p class="subtitulo">Instala un perfil local, revisa sus módulos y verifica el resultado sin datos reales.</p>
   </header>
-  <main>
-    <p id="estado" class="aviso">Leyendo <code>configuracion.json</code>…</p>
+  <main class="rejilla">
     <section>
-      <h2>Perfiles disponibles</h2>
-      <div id="perfiles" class="rejilla"></div>
+      <h2>1. Elegir perfil</h2>
+      <p><strong>Soporte</strong>: CRM, incidencias e inventario.</p>
+      <button data-perfil="soporte">Instalar perfil de soporte</button>
+      <p><strong>Comercial</strong>: CRM, ventas y facturación.</p>
+      <button data-perfil="comercial">Instalar perfil comercial</button>
+      <p id="mensaje" class="muted" role="status">Comprobando instalación local…</p>
     </section>
-    <section>
-      <h2>Módulos</h2>
-      <div id="modulos" class="rejilla"></div>
-    </section>
-    <section class="aviso">
-      <strong>Comprobación completa:</strong> ejecuta <code>python verificar.py</code>.
-      El panel informa de la configuración preparada; el verificador revisa la base SQLite creada por el instalador.
-    </section>
+    <section><h2>2. Módulos activos</h2><ul id="modulos"><li class="muted">Sin instalación.</li></ul></section>
+    <section><h2>3. Verificación</h2><button id="botonVerificar">Ejecutar comprobación</button><ul id="pruebas"><li class="muted">Aún no ejecutada.</li></ul></section>
+    <section><h2>Bitácora de operaciones</h2><ul id="operaciones"><li class="muted">Sin operaciones.</li></ul></section>
   </main>
   <script>
-    fetch('configuracion.json')
-      .then(respuesta => {
-        if (!respuesta.ok) throw new Error('No se pudo leer la configuración');
-        return respuesta.json();
-      })
-      .then(configuracion => {
-        document.querySelector('#estado').textContent = `Empresa de demostración: ${configuracion.empresa}. Moneda: ${configuracion.moneda}.`;
-        document.querySelector('#perfiles').innerHTML = Object.entries(configuracion.perfiles)
-          .map(([nombre, modulos]) => `<article><strong>${nombre}</strong><p>${modulos.join(', ')}</p></article>`).join('');
-        document.querySelector('#modulos').innerHTML = Object.entries(configuracion.modulos)
-          .map(([codigo, nombre]) => `<article><strong>${codigo}</strong><p>${nombre}</p><span class="activo">Disponible para configurar</span></article>`).join('');
-      })
-      .catch(error => { document.querySelector('#estado').textContent = `Incidencia: ${error.message}`; });
+    const $ = selector => document.querySelector(selector);
+    const escapeHtml = texto => String(texto).replace(/[&<>'"]/g, caracter => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[caracter]));
+    async function cargarEstado() {
+      const estado = await (await fetch('/api/estado')).json();
+      [...document.querySelectorAll('[data-perfil]')].forEach(boton => boton.disabled = estado.instalado);
+      if (!estado.instalado) { $('#mensaje').textContent = estado.mensaje; return; }
+      $('#mensaje').innerHTML = `<span class="ok">Instalado:</span> perfil ${escapeHtml(estado.configuracion.perfil)} para ${escapeHtml(estado.configuracion.empresa)}.`;
+      $('#modulos').innerHTML = estado.modulos.map(modulo => `<li><strong>${escapeHtml(modulo.codigo)}</strong> — ${escapeHtml(modulo.nombre)}</li>`).join('');
+      $('#operaciones').innerHTML = estado.operaciones.map(operacion => `<li>${escapeHtml(operacion.accion)}: ${escapeHtml(operacion.detalle)}</li>`).join('');
+    }
+    async function instalar(perfil) {
+      $('#mensaje').textContent = 'Instalando…';
+      const respuesta = await fetch('/api/instalar', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({perfil})});
+      const resultado = await respuesta.json();
+      if (!respuesta.ok) { $('#mensaje').innerHTML = `<span class="fallo">${escapeHtml(resultado.error)}</span>`; return; }
+      await cargarEstado();
+    }
+    async function ejecutarVerificacion() {
+      const pruebas = await (await fetch('/api/verificar')).json();
+      $('#pruebas').innerHTML = pruebas.map(prueba => `<li class="${prueba.ok ? 'ok' : 'fallo'}">${prueba.ok ? 'OK' : 'FALLO'} — ${escapeHtml(prueba.nombre)}: ${escapeHtml(prueba.detalle)}</li>`).join('');
+    }
+    document.querySelectorAll('[data-perfil]').forEach(boton => boton.addEventListener('click', () => instalar(boton.dataset.perfil)));
+    $('#botonVerificar').addEventListener('click', ejecutarVerificacion);
+    cargarEstado().catch(error => { $('#mensaje').textContent = `No se puede conectar con el servidor: ${error.message}`; });
   </script>
 </body>
 </html>
+```
+**servidor.py**
+```python
+"""Servidor local del asistente de implantación de ITC ERP."""
+import json
+import sqlite3
+from http import HTTPStatus
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
+import instalar
+
+BASE = Path(__file__).parent
+RUTA_BD = BASE / "data" / "itc_erp.sqlite"
+
+
+def leer_estado():
+    if not RUTA_BD.exists():
+        return {"instalado": False, "mensaje": "No existe todavía una instalación local."}
+    with sqlite3.connect(RUTA_BD) as conexion:
+        configuracion = dict(conexion.execute("SELECT clave, valor FROM configuracion"))
+        modulos = [{"codigo": codigo, "nombre": nombre} for codigo, nombre in conexion.execute("SELECT codigo, nombre FROM modulos WHERE activo = 1 ORDER BY codigo")]
+        operaciones = [{"momento": momento, "accion": accion, "detalle": detalle} for momento, accion, detalle in conexion.execute("SELECT momento, accion, detalle FROM operaciones ORDER BY rowid DESC LIMIT 5")]
+    return {"instalado": True, "configuracion": configuracion, "modulos": modulos, "operaciones": operaciones}
+
+
+def verificar():
+    estado = leer_estado()
+    if not estado["instalado"]:
+        return [{"nombre": "Base de datos", "ok": False, "detalle": "Instala un perfil primero."}]
+    with sqlite3.connect(RUTA_BD) as conexion:
+        tablas = {fila[0] for fila in conexion.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        operaciones = conexion.execute("SELECT COUNT(*) FROM operaciones").fetchone()[0]
+    configuracion = estado["configuracion"]
+    return [
+        {"nombre": "Estructura SQLite", "ok": {"configuracion", "modulos", "usuarios", "operaciones"}.issubset(tablas), "detalle": "Tablas necesarias creadas."},
+        {"nombre": "Perfil", "ok": configuracion.get("perfil") in {"comercial", "soporte"}, "detalle": configuracion.get("perfil", "sin perfil")},
+        {"nombre": "Módulos", "ok": len(estado["modulos"]) == 3, "detalle": f"{len(estado['modulos'])} módulos activos."},
+        {"nombre": "Bitácora", "ok": operaciones >= 1, "detalle": f"{operaciones} operación(es) registrada(s)."},
+    ]
+
+
+class Manejador(SimpleHTTPRequestHandler):
+    def responder_json(self, datos, codigo=HTTPStatus.OK):
+        cuerpo = json.dumps(datos, ensure_ascii=False).encode("utf-8")
+        self.send_response(codigo)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(cuerpo)))
+        self.end_headers()
+        self.wfile.write(cuerpo)
+
+    def do_GET(self):
+        if self.path == "/api/estado":
+            return self.responder_json(leer_estado())
+        if self.path == "/api/verificar":
+            return self.responder_json(verificar())
+        return super().do_GET()
+
+    def do_POST(self):
+        if self.path != "/api/instalar":
+            return self.responder_json({"error": "Ruta no encontrada."}, HTTPStatus.NOT_FOUND)
+        try:
+            longitud = int(self.headers.get("Content-Length", "0"))
+            datos = json.loads(self.rfile.read(longitud).decode("utf-8"))
+            instalar.instalar(datos.get("perfil", ""))
+            self.responder_json({"mensaje": "Instalación completada.", "estado": leer_estado()}, HTTPStatus.CREATED)
+        except (json.JSONDecodeError, ValueError) as error:
+            self.responder_json({"error": str(error)}, HTTPStatus.BAD_REQUEST)
+        except FileExistsError as error:
+            self.responder_json({"error": str(error)}, HTTPStatus.CONFLICT)
+        except sqlite3.Error as error:
+            self.responder_json({"error": f"Error de SQLite: {error}"}, HTTPStatus.INTERNAL_SERVER_ERROR)
+
+
+if __name__ == "__main__":
+    print("ITC ERP disponible en http://127.0.0.1:8080")
+    ThreadingHTTPServer(("127.0.0.1", 8080), Manejador).serve_forever()
 ```
 **verificar.py**
 ```python
@@ -356,10 +440,10 @@ escrito de forma propia.
 | Criterio | Evidencia en la entrega |
 | --- | --- |
 | a) Módulos ERP-CRM | `configuracion.json` identifica CRM, ventas, facturación, inventario e incidencias. `01-ejercicios/01-modulos.py` los lista con su finalidad. |
-| b) Diferentes instalaciones | `instalar.py` acepta `--perfil comercial` y `--perfil soporte`; ambos crean la misma estructura técnica con módulos activos diferentes. |
-| c) Configuración de módulos | El instalador lee empresa, moneda, zona horaria y perfiles desde `configuracion.json` y los registra en SQLite. El panel muestra la configuración disponible. |
+| b) Diferentes instalaciones | `instalar.py` acepta `--perfil comercial` y `--perfil soporte`; ambos crean la misma estructura técnica con módulos activos diferentes. `servidor.py` permite iniciar la instalación desde el asistente local. |
+| c) Configuración de módulos | El instalador lee empresa, moneda, zona horaria y perfiles desde `configuracion.json` y los registra en SQLite. El asistente muestra los módulos que han quedado activos. |
 | d) Instalaciones adaptadas | `OPERACIONES.md` explica dos supuestos. Soporte activa CRM, incidencias e inventario; comercial activa CRM, ventas y facturación. |
-| e) Verificación | `verificar.py` comprueba que existen las cuatro tablas, que el perfil es válido, que hay tres módulos activos y que se registró la instalación. |
+| e) Verificación | `verificar.py` y el botón «Ejecutar comprobación» del asistente comprueban que existen las cuatro tablas, que el perfil es válido, que hay tres módulos activos y que se registró la instalación. |
 | f) Documentación e incidencias | `OPERACIONES.md` registra el procedimiento y cuatro incidencias previstas con su solución. El instalador deja una fila en la tabla `operaciones`. |
 
 ## Prueba de la entrega

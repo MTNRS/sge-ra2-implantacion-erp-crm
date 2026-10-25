@@ -10,10 +10,10 @@ escrito de forma propia.
 | Criterio | Evidencia en la entrega |
 | --- | --- |
 | a) Módulos ERP-CRM | `configuracion.json` identifica CRM, ventas, facturación, inventario e incidencias. `01-ejercicios/01-modulos.py` los lista con su finalidad. |
-| b) Diferentes instalaciones | `instalar.py` acepta `--perfil comercial` y `--perfil soporte`; ambos crean la misma estructura técnica con módulos activos diferentes. |
-| c) Configuración de módulos | El instalador lee empresa, moneda, zona horaria y perfiles desde `configuracion.json` y los registra en SQLite. El panel muestra la configuración disponible. |
+| b) Diferentes instalaciones | `instalar.py` acepta `--perfil comercial` y `--perfil soporte`; ambos crean la misma estructura técnica con módulos activos diferentes. `servidor.py` permite iniciar la instalación desde el asistente local. |
+| c) Configuración de módulos | El instalador lee empresa, moneda, zona horaria y perfiles desde `configuracion.json` y los registra en SQLite. El asistente muestra los módulos que han quedado activos. |
 | d) Instalaciones adaptadas | `OPERACIONES.md` explica dos supuestos. Soporte activa CRM, incidencias e inventario; comercial activa CRM, ventas y facturación. |
-| e) Verificación | `verificar.py` comprueba que existen las cuatro tablas, que el perfil es válido, que hay tres módulos activos y que se registró la instalación. |
+| e) Verificación | `verificar.py` y el botón «Ejecutar comprobación» del asistente comprueban que existen las cuatro tablas, que el perfil es válido, que hay tres módulos activos y que se registró la instalación. |
 | f) Documentación e incidencias | `OPERACIONES.md` registra el procedimiento y cuatro incidencias previstas con su solución. El instalador deja una fila en la tabla `operaciones`. |
 
 ## Prueba de la entrega

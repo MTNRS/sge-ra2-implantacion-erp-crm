@@ -2,14 +2,14 @@
 
 ## Información de generación
 
-- **Fecha:** 2026-10-25 10:23:19 +0100
+- **Fecha:** 2026-10-25 10:27:53 +0100
 - **Usuario:** freak
 - **Equipo:** JARVIS
 - **Sistema operativo:** Windows
 - **Arquitectura:** x86_64
 - **Directorio de ejecución:** `C:/Users/freak/DAM2`
 - **Proyecto documentado:** `C:/Users/freak/Documents/DAM2-entregas/sge-ra2-implantacion-erp-crm`
-- **HMAC-SHA-256 de autenticidad:** `5f5abb4b38e9e9ac6a2c9ba309e601d8c3dcca84b0a962ddfce0b8756dfc3b94`
+- **HMAC-SHA-256 de autenticidad:** `b3020c81fdfa442fe79a6ae36c69f24a83d12d0c3c04150715a5008dcc85319a`
 
 > El HMAC-SHA-256 se calcula sobre el documento completo usando un secreto incluido en el programa y 64 ceros en el propio campo del HMAC. El secreto no se escribe en el informe. Este mecanismo permite comprobar integridad y que el documento fue generado con el mismo secreto.
 
@@ -383,6 +383,25 @@ def instalar(perfil):
              for codigo, nombre in configuracion["modulos"].items()],
         )
         conexion.execute("INSERT INTO usuarios VALUES (?, ?)", ("administrador", "administración"))
+        # Datos inventados: permiten recorrer los módulos sin datos de clientes reales.
+        conexion.executemany(
+            "INSERT INTO clientes (nombre, email, creado) VALUES (?, ?, ?)",
+            [("Nexo Formación S.L.", "contacto@nexoformacion.example", marca_tiempo),
+             ("Cafetería Horizonte", "gestion@horizonte.example", marca_tiempo),
+             ("Talleres Levante", "it@tallereslevante.example", marca_tiempo)],
+        )
+        conexion.executemany(
+            "INSERT INTO incidencias (asunto, estado, creado) VALUES (?, ?, ?)",
+            [("Acceso al portal de soporte", "abierto", marca_tiempo),
+             ("Revisión del equipo de recepción", "en revisión", marca_tiempo),
+             ("Actualización de inventario", "operativo", marca_tiempo)],
+        )
+        conexion.executemany(
+            "INSERT INTO equipos (nombre, estado, creado) VALUES (?, ?, ?)",
+            [("Portátil ITC-014", "operativo", marca_tiempo),
+             ("Router de demostración", "en revisión", marca_tiempo),
+             ("Monitor sala Norte", "operativo", marca_tiempo)],
+        )
         conexion.execute(
             "INSERT INTO operaciones VALUES (?, ?, ?)",
             (marca_tiempo, "instalación", f"Perfil {perfil}; módulos: {', '.join(modulos_activos)}"),

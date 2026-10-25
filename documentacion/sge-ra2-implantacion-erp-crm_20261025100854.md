@@ -2,14 +2,14 @@
 
 ## Información de generación
 
-- **Fecha:** 2026-10-25 10:02:44 +0100
+- **Fecha:** 2026-10-25 10:08:54 +0100
 - **Usuario:** freak
 - **Equipo:** JARVIS
 - **Sistema operativo:** Windows
 - **Arquitectura:** x86_64
 - **Directorio de ejecución:** `C:/Users/freak/DAM2`
 - **Proyecto documentado:** `C:/Users/freak/Documents/DAM2-entregas/sge-ra2-implantacion-erp-crm`
-- **HMAC-SHA-256 de autenticidad:** `ec88361838411aa14dac5a8b99aea29e7193efc85a70ddfc3f931463c652087e`
+- **HMAC-SHA-256 de autenticidad:** `5a234d5002a7945805745f1f1f631a5e827573ee49e8bc65a0657d70d7c916ce`
 
 > El HMAC-SHA-256 se calcula sobre el documento completo usando un secreto incluido en el programa y 64 ceros en el propio campo del HMAC. El secreto no se escribe en el informe. Este mecanismo permite comprobar integridad y que el documento fue generado con el mismo secreto.
 
@@ -25,7 +25,9 @@ C:/Users/freak/Documents/DAM2-entregas/sge-ra2-implantacion-erp-crm
 ├── 02-proyecto-unidad
 │   └── itc-erp-implantacion
 │       ├── OPERACIONES.md
+│       ├── aplicacion.js
 │       ├── configuracion.json
+│       ├── estilos.css
 │       ├── instalar.py
 │       ├── panel.html
 │       ├── servidor.py
@@ -161,6 +163,49 @@ y cobros en lugar de la gestión de incidencias.
 | Se abre el panel como archivo | Se debe usar `python -m http.server` para que `fetch()` pueda leer el JSON. |
 
 ```
+**aplicacion.js**
+```js
+const $ = selector => document.querySelector(selector);
+const textoSeguro = texto => String(texto ?? '').replace(/[&<>'"]/g, caracter => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[caracter]));
+
+async function cargarEstado() {
+  const estado = await (await fetch('/api/estado')).json();
+  const botones = [...document.querySelectorAll('[data-perfil]')];
+  botones.forEach(boton => boton.disabled = estado.instalado);
+  if (!estado.instalado) {
+    $('#mensaje').textContent = estado.mensaje;
+    return;
+  }
+  const configuracion = estado.configuracion;
+  $('#estadoGeneral').textContent = 'Instalación operativa';
+  $('#estadoGeneral').className = 'insignia verde';
+  $('#contadorModulos').textContent = estado.modulos.length;
+  $('#estadoBase').textContent = 'Activa';
+  $('#contadorOperaciones').textContent = estado.operaciones.length;
+  $('#perfilActual').textContent = `Perfil ${configuracion.perfil}`;
+  $('#mensaje').textContent = `Instalado para ${configuracion.empresa}. Para cambiar de supuesto se prepara una instalación nueva.`;
+  $('#listaModulos').innerHTML = estado.modulos.map(modulo => `<article class="modulo"><b>${textoSeguro(modulo.codigo)}</b><span>${textoSeguro(modulo.nombre)}</span></article>`).join('');
+  $('#operaciones').innerHTML = estado.operaciones.map(operacion => `<tr><td>${textoSeguro(operacion.accion)}</td><td>${textoSeguro(operacion.detalle)}</td><td>${textoSeguro(operacion.momento)}</td></tr>`).join('');
+}
+
+async function instalar(perfil) {
+  $('#mensaje').textContent = 'Instalando perfil…';
+  const respuesta = await fetch('/api/instalar', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({perfil})});
+  const resultado = await respuesta.json();
+  if (!respuesta.ok) { $('#mensaje').textContent = resultado.error; return; }
+  await cargarEstado();
+}
+
+async function verificar() {
+  const pruebas = await (await fetch('/api/verificar')).json();
+  $('#contadorPruebas').textContent = `${pruebas.filter(prueba => prueba.ok).length}/${pruebas.length}`;
+  $('#pruebas').innerHTML = pruebas.map(prueba => `<li class="${prueba.ok ? 'ok' : 'fallo'}"><strong>${prueba.ok ? 'OK' : 'FALLO'}</strong> · ${textoSeguro(prueba.nombre)} — ${textoSeguro(prueba.detalle)}</li>`).join('');
+}
+
+document.querySelectorAll('[data-perfil]').forEach(boton => boton.addEventListener('click', () => instalar(boton.dataset.perfil)));
+$('#botonVerificar').addEventListener('click', verificar);
+cargarEstado().catch(error => { $('#mensaje').textContent = `Error de conexión: ${error.message}`; });
+```
 **configuracion.json**
 ```json
 {
@@ -180,6 +225,10 @@ y cobros en lugar de la gestión de incidencias.
   }
 }
 
+```
+**estilos.css**
+```css
+:root{--azul:#56b7ff;--verde:#72efb2;--fondo:#f6fbff;--tinta:#172536;--suave:#6b7788;--borde:#dbe8ee;--panel:#fff;--lateral:#072236}*{box-sizing:border-box}body{margin:0;font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--fondo);color:var(--tinta)}.aplicacion{min-height:100vh}.barra-lateral{position:fixed;inset:0 auto 0 0;width:260px;padding:24px 14px;display:flex;flex-direction:column;background:linear-gradient(180deg,#071f31,#0a3448 62%,#07523d);color:#b8d0dc}.marca{display:flex;gap:10px;align-items:center;padding:0 10px 28px;color:#fff}.marca-icono{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--azul),var(--verde));color:#06243a;font-size:12px;font-weight:900}.marca strong,.marca small{display:block}.marca small{font-size:11px;color:#98b0bc}.seccion{margin:17px 11px 6px;font-size:10px;letter-spacing:.1em;color:#77a1b5}.enlace{display:block;margin:2px 0;padding:9px 11px;border-radius:8px;color:#bbd0da;text-decoration:none}.enlace:hover,.enlace.activo{background:rgba(139,209,255,.17);color:#fff}.plan{margin-top:auto;padding:13px;border-top:1px solid rgba(255,255,255,.16);font-size:12px;color:#b6ccd6}.plan strong{color:#fff}.contenido{margin-left:260px}.cabecera{height:78px;padding:14px 34px;display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.92);border-bottom:1px solid var(--borde)}.cabecera h1{margin:0;font-size:21px}.ruta{margin:0;color:var(--suave);font-size:12px}.usuario{display:flex;gap:9px;align-items:center;font-size:13px}.usuario b{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;color:#063a30;background:var(--verde)}.pagina{max-width:1250px;margin:auto;padding:30px}.titulo-pagina,.tarjeta-cabecera{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}.titulo-pagina h2{margin:0;font-size:25px}.titulo-pagina p,.texto-secundario{margin:5px 0;color:var(--suave)}.rejilla-indicadores{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0}.indicador,.tarjeta{background:var(--panel);border:1px solid var(--borde);border-radius:16px;box-shadow:0 8px 24px rgba(10,61,90,.06)}.indicador{padding:18px;display:flex;gap:13px}.indicador>span{display:grid;place-items:center;width:39px;height:39px;border-radius:11px;background:#e8f6ff;color:#168fe8;font-size:20px}.indicador small,.indicador em{display:block;color:var(--suave);font-size:12px;font-style:normal}.indicador strong{display:block;margin:2px 0;font-size:23px}.rejilla-dos{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;margin-bottom:18px}.tarjeta{padding:21px;margin-bottom:18px}.tarjeta h3{margin:0;font-size:16px}.insignia{display:inline-block;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:700}.neutra{background:#edf2f5;color:#52616c}.azul{background:#e3f4ff;color:#0874b8}.verde{background:#e4f8ed;color:#137044}.perfiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}.perfil{border:1px solid #cfe5ef;border-radius:12px;padding:15px;text-align:left;background:#fbfdff;cursor:pointer;color:var(--tinta)}.perfil:hover{border-color:var(--azul);background:#f1faff}.perfil:disabled{opacity:.55;cursor:not-allowed}.perfil strong,.perfil span,.perfil small{display:block}.perfil span{margin:6px 0;color:#0874b8;font-size:13px}.perfil small{color:var(--suave)}button{font:inherit}.boton-secundario{padding:8px 11px;border:1px solid #b9d8e7;border-radius:8px;background:#f6fbff;color:#0874b8;font-weight:700;cursor:pointer}.estado-texto{min-height:22px;margin:0;color:var(--suave)}.lista-pruebas{padding:0;margin:18px 0 0;list-style:none}.lista-pruebas li{margin:8px 0;padding:9px 10px;border-radius:7px;background:#f8fafc}.ok{color:#137044;background:#effbf4!important}.fallo{color:#b42318;background:#fff1f1!important}.pendiente{color:var(--suave)}.rejilla-modulos{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.modulo{padding:15px;border:1px solid var(--borde);border-radius:11px;background:#fbfdff}.modulo b{display:block;color:#0874b8;text-transform:uppercase;font-size:12px}.modulo span{color:var(--suave)}.tabla-contenedor{overflow:auto;margin-top:16px}table{width:100%;border-collapse:collapse;text-align:left}th,td{padding:11px;border-bottom:1px solid var(--borde)}th{font-size:12px;color:var(--suave)}@media(max-width:850px){.barra-lateral{position:static;width:auto}.contenido{margin:0}.rejilla-indicadores,.rejilla-dos{grid-template-columns:1fr 1fr}.pagina{padding:18px}}@media(max-width:560px){.rejilla-indicadores,.rejilla-dos,.perfiles,.rejilla-modulos{grid-template-columns:1fr}.cabecera{padding:12px 18px}.usuario span{display:none}}
 ```
 **instalar.py**
 ```python
@@ -256,63 +305,64 @@ if __name__ == "__main__":
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ITC ERP · Asistente de implantación</title>
-  <style>
-    :root { font-family:system-ui,sans-serif; color:#e5e7eb; background:#0f172a; }
-    body { max-width:1050px; margin:auto; padding:2rem; } header { border-bottom:1px solid #334155; margin-bottom:1.5rem; }
-    .etiqueta { color:#67e8f9; font-size:.8rem; letter-spacing:.12em; } .subtitulo,.muted { color:#94a3b8; }
-    .rejilla { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1rem; }
-    section { background:#172033; border:1px solid #334155; padding:1.25rem; border-radius:.6rem; }
-    button { background:#0891b2; border:0; padding:.7rem 1rem; border-radius:.35rem; color:white; cursor:pointer; font-weight:700; }
-    button:disabled { opacity:.45; cursor:not-allowed; } .ok { color:#86efac; } .fallo { color:#fca5a5; }
-    ul { padding-left:1.25rem; } #mensaje { min-height:1.5rem; }
-  </style>
+  <title>Configuración · Integra Tech Consulting</title>
+  <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-  <header>
-    <p class="etiqueta">INTEGRA TECH CONSULTING · RA2</p>
-    <h1>Asistente de implantación ITC ERP</h1>
-    <p class="subtitulo">Instala un perfil local, revisa sus módulos y verifica el resultado sin datos reales.</p>
-  </header>
-  <main class="rejilla">
-    <section>
-      <h2>1. Elegir perfil</h2>
-      <p><strong>Soporte</strong>: CRM, incidencias e inventario.</p>
-      <button data-perfil="soporte">Instalar perfil de soporte</button>
-      <p><strong>Comercial</strong>: CRM, ventas y facturación.</p>
-      <button data-perfil="comercial">Instalar perfil comercial</button>
-      <p id="mensaje" class="muted" role="status">Comprobando instalación local…</p>
-    </section>
-    <section><h2>2. Módulos activos</h2><ul id="modulos"><li class="muted">Sin instalación.</li></ul></section>
-    <section><h2>3. Verificación</h2><button id="botonVerificar">Ejecutar comprobación</button><ul id="pruebas"><li class="muted">Aún no ejecutada.</li></ul></section>
-    <section><h2>Bitácora de operaciones</h2><ul id="operaciones"><li class="muted">Sin operaciones.</li></ul></section>
-  </main>
-  <script>
-    const $ = selector => document.querySelector(selector);
-    const escapeHtml = texto => String(texto).replace(/[&<>'"]/g, caracter => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[caracter]));
-    async function cargarEstado() {
-      const estado = await (await fetch('/api/estado')).json();
-      [...document.querySelectorAll('[data-perfil]')].forEach(boton => boton.disabled = estado.instalado);
-      if (!estado.instalado) { $('#mensaje').textContent = estado.mensaje; return; }
-      $('#mensaje').innerHTML = `<span class="ok">Instalado:</span> perfil ${escapeHtml(estado.configuracion.perfil)} para ${escapeHtml(estado.configuracion.empresa)}.`;
-      $('#modulos').innerHTML = estado.modulos.map(modulo => `<li><strong>${escapeHtml(modulo.codigo)}</strong> — ${escapeHtml(modulo.nombre)}</li>`).join('');
-      $('#operaciones').innerHTML = estado.operaciones.map(operacion => `<li>${escapeHtml(operacion.accion)}: ${escapeHtml(operacion.detalle)}</li>`).join('');
-    }
-    async function instalar(perfil) {
-      $('#mensaje').textContent = 'Instalando…';
-      const respuesta = await fetch('/api/instalar', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({perfil})});
-      const resultado = await respuesta.json();
-      if (!respuesta.ok) { $('#mensaje').innerHTML = `<span class="fallo">${escapeHtml(resultado.error)}</span>`; return; }
-      await cargarEstado();
-    }
-    async function ejecutarVerificacion() {
-      const pruebas = await (await fetch('/api/verificar')).json();
-      $('#pruebas').innerHTML = pruebas.map(prueba => `<li class="${prueba.ok ? 'ok' : 'fallo'}">${prueba.ok ? 'OK' : 'FALLO'} — ${escapeHtml(prueba.nombre)}: ${escapeHtml(prueba.detalle)}</li>`).join('');
-    }
-    document.querySelectorAll('[data-perfil]').forEach(boton => boton.addEventListener('click', () => instalar(boton.dataset.perfil)));
-    $('#botonVerificar').addEventListener('click', ejecutarVerificacion);
-    cargarEstado().catch(error => { $('#mensaje').textContent = `No se puede conectar con el servidor: ${error.message}`; });
-  </script>
+  <div class="aplicacion">
+    <aside class="barra-lateral">
+      <div class="marca"><span class="marca-icono">ITC</span><div><strong>Integra Tech</strong><small>Gestión Empresarial</small></div></div>
+      <p class="seccion">PRINCIPAL</p>
+      <a href="#resumen" class="enlace activo">▦ Dashboard</a>
+      <a href="#modulos" class="enlace">▣ Módulos</a>
+      <p class="seccion">OPERACIONES</p>
+      <a href="#modulos" class="enlace">♧ Clientes</a>
+      <a href="#modulos" class="enlace">◈ Soporte</a>
+      <a href="#modulos" class="enlace">▤ Inventario</a>
+      <p class="seccion">SISTEMA</p>
+      <a href="#implantacion" class="enlace activo">⚙ Configuración</a>
+      <div class="plan">Plan académico<br><strong>Entorno local</strong></div>
+    </aside>
+    <main class="contenido">
+      <header class="cabecera">
+        <div><p class="ruta">Sistema / Configuración / Implantación</p><h1>Configuración</h1></div>
+        <div class="usuario"><span>Administrador ITC</span><b>AD</b></div>
+      </header>
+      <div class="pagina">
+        <section id="resumen" class="titulo-pagina"><div><h2>Estado de la implantación</h2><p>Configuración local de módulos para el entorno académico ITC.</p></div><span id="estadoGeneral" class="insignia neutra">Comprobando…</span></section>
+        <section class="rejilla-indicadores">
+          <article class="indicador"><span>▣</span><div><small>Módulos activos</small><strong id="contadorModulos">—</strong><em>Perfil seleccionado</em></div></article>
+          <article class="indicador"><span>◉</span><div><small>Base de datos</small><strong id="estadoBase">—</strong><em>SQLite local</em></div></article>
+          <article class="indicador"><span>✓</span><div><small>Comprobaciones</small><strong id="contadorPruebas">—</strong><em>Última ejecución</em></div></article>
+          <article class="indicador"><span>◷</span><div><small>Operaciones</small><strong id="contadorOperaciones">—</strong><em>Bitácora local</em></div></article>
+        </section>
+        <section class="rejilla-dos">
+          <article id="implantacion" class="tarjeta">
+            <div class="tarjeta-cabecera"><h3>Implantación de módulos</h3><span class="insignia azul">RA2</span></div>
+            <p class="texto-secundario">Selecciona el supuesto empresarial. El instalador registra la configuración y activa solo los módulos necesarios.</p>
+            <div class="perfiles">
+              <button class="perfil" data-perfil="soporte"><strong>Soporte técnico</strong><span>CRM · Soporte · Inventario</span><small>Para gestionar clientes, incidencias y equipos.</small></button>
+              <button class="perfil" data-perfil="comercial"><strong>Comercial</strong><span>CRM · Ventas · Facturación</span><small>Para presupuestos, pedidos y cobros.</small></button>
+            </div>
+            <p id="mensaje" class="estado-texto" role="status">Conectando con el instalador…</p>
+          </article>
+          <article class="tarjeta">
+            <div class="tarjeta-cabecera"><h3>Verificación del sistema</h3><button id="botonVerificar" class="boton-secundario">Ejecutar prueba</button></div>
+            <ul id="pruebas" class="lista-pruebas"><li class="pendiente">Aún no se han ejecutado las comprobaciones.</li></ul>
+          </article>
+        </section>
+        <section id="modulos" class="tarjeta">
+          <div class="tarjeta-cabecera"><div><h3>Módulos instalados</h3><p class="texto-secundario">Vista del perfil que tendría disponible la organización.</p></div><span id="perfilActual" class="insignia neutra">Sin perfil</span></div>
+          <div id="listaModulos" class="rejilla-modulos"><p class="pendiente">No hay módulos activados.</p></div>
+        </section>
+        <section class="tarjeta">
+          <div class="tarjeta-cabecera"><h3>Operaciones realizadas</h3><span class="texto-secundario">Registro de instalación</span></div>
+          <div class="tabla-contenedor"><table><thead><tr><th>Acción</th><th>Detalle</th><th>Momento</th></tr></thead><tbody id="operaciones"><tr><td colspan="3" class="pendiente">Sin operaciones registradas.</td></tr></tbody></table></div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script src="aplicacion.js"></script>
 </body>
 </html>
 ```

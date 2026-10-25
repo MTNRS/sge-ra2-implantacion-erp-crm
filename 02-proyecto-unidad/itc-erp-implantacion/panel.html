@@ -3,62 +3,63 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ITC ERP · Asistente de implantación</title>
-  <style>
-    :root { font-family:system-ui,sans-serif; color:#e5e7eb; background:#0f172a; }
-    body { max-width:1050px; margin:auto; padding:2rem; } header { border-bottom:1px solid #334155; margin-bottom:1.5rem; }
-    .etiqueta { color:#67e8f9; font-size:.8rem; letter-spacing:.12em; } .subtitulo,.muted { color:#94a3b8; }
-    .rejilla { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1rem; }
-    section { background:#172033; border:1px solid #334155; padding:1.25rem; border-radius:.6rem; }
-    button { background:#0891b2; border:0; padding:.7rem 1rem; border-radius:.35rem; color:white; cursor:pointer; font-weight:700; }
-    button:disabled { opacity:.45; cursor:not-allowed; } .ok { color:#86efac; } .fallo { color:#fca5a5; }
-    ul { padding-left:1.25rem; } #mensaje { min-height:1.5rem; }
-  </style>
+  <title>Configuración · Integra Tech Consulting</title>
+  <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-  <header>
-    <p class="etiqueta">INTEGRA TECH CONSULTING · RA2</p>
-    <h1>Asistente de implantación ITC ERP</h1>
-    <p class="subtitulo">Instala un perfil local, revisa sus módulos y verifica el resultado sin datos reales.</p>
-  </header>
-  <main class="rejilla">
-    <section>
-      <h2>1. Elegir perfil</h2>
-      <p><strong>Soporte</strong>: CRM, incidencias e inventario.</p>
-      <button data-perfil="soporte">Instalar perfil de soporte</button>
-      <p><strong>Comercial</strong>: CRM, ventas y facturación.</p>
-      <button data-perfil="comercial">Instalar perfil comercial</button>
-      <p id="mensaje" class="muted" role="status">Comprobando instalación local…</p>
-    </section>
-    <section><h2>2. Módulos activos</h2><ul id="modulos"><li class="muted">Sin instalación.</li></ul></section>
-    <section><h2>3. Verificación</h2><button id="botonVerificar">Ejecutar comprobación</button><ul id="pruebas"><li class="muted">Aún no ejecutada.</li></ul></section>
-    <section><h2>Bitácora de operaciones</h2><ul id="operaciones"><li class="muted">Sin operaciones.</li></ul></section>
-  </main>
-  <script>
-    const $ = selector => document.querySelector(selector);
-    const escapeHtml = texto => String(texto).replace(/[&<>'"]/g, caracter => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[caracter]));
-    async function cargarEstado() {
-      const estado = await (await fetch('/api/estado')).json();
-      [...document.querySelectorAll('[data-perfil]')].forEach(boton => boton.disabled = estado.instalado);
-      if (!estado.instalado) { $('#mensaje').textContent = estado.mensaje; return; }
-      $('#mensaje').innerHTML = `<span class="ok">Instalado:</span> perfil ${escapeHtml(estado.configuracion.perfil)} para ${escapeHtml(estado.configuracion.empresa)}.`;
-      $('#modulos').innerHTML = estado.modulos.map(modulo => `<li><strong>${escapeHtml(modulo.codigo)}</strong> — ${escapeHtml(modulo.nombre)}</li>`).join('');
-      $('#operaciones').innerHTML = estado.operaciones.map(operacion => `<li>${escapeHtml(operacion.accion)}: ${escapeHtml(operacion.detalle)}</li>`).join('');
-    }
-    async function instalar(perfil) {
-      $('#mensaje').textContent = 'Instalando…';
-      const respuesta = await fetch('/api/instalar', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({perfil})});
-      const resultado = await respuesta.json();
-      if (!respuesta.ok) { $('#mensaje').innerHTML = `<span class="fallo">${escapeHtml(resultado.error)}</span>`; return; }
-      await cargarEstado();
-    }
-    async function ejecutarVerificacion() {
-      const pruebas = await (await fetch('/api/verificar')).json();
-      $('#pruebas').innerHTML = pruebas.map(prueba => `<li class="${prueba.ok ? 'ok' : 'fallo'}">${prueba.ok ? 'OK' : 'FALLO'} — ${escapeHtml(prueba.nombre)}: ${escapeHtml(prueba.detalle)}</li>`).join('');
-    }
-    document.querySelectorAll('[data-perfil]').forEach(boton => boton.addEventListener('click', () => instalar(boton.dataset.perfil)));
-    $('#botonVerificar').addEventListener('click', ejecutarVerificacion);
-    cargarEstado().catch(error => { $('#mensaje').textContent = `No se puede conectar con el servidor: ${error.message}`; });
-  </script>
+  <div class="aplicacion">
+    <aside class="barra-lateral">
+      <div class="marca"><span class="marca-icono">ITC</span><div><strong>Integra Tech</strong><small>Gestión Empresarial</small></div></div>
+      <p class="seccion">PRINCIPAL</p>
+      <a href="#resumen" class="enlace activo">▦ Dashboard</a>
+      <a href="#modulos" class="enlace">▣ Módulos</a>
+      <p class="seccion">OPERACIONES</p>
+      <a href="#modulos" class="enlace">♧ Clientes</a>
+      <a href="#modulos" class="enlace">◈ Soporte</a>
+      <a href="#modulos" class="enlace">▤ Inventario</a>
+      <p class="seccion">SISTEMA</p>
+      <a href="#implantacion" class="enlace activo">⚙ Configuración</a>
+      <div class="plan">Plan académico<br><strong>Entorno local</strong></div>
+    </aside>
+    <main class="contenido">
+      <header class="cabecera">
+        <div><p class="ruta">Sistema / Configuración / Implantación</p><h1>Configuración</h1></div>
+        <div class="usuario"><span>Administrador ITC</span><b>AD</b></div>
+      </header>
+      <div class="pagina">
+        <section id="resumen" class="titulo-pagina"><div><h2>Estado de la implantación</h2><p>Configuración local de módulos para el entorno académico ITC.</p></div><span id="estadoGeneral" class="insignia neutra">Comprobando…</span></section>
+        <section class="rejilla-indicadores">
+          <article class="indicador"><span>▣</span><div><small>Módulos activos</small><strong id="contadorModulos">—</strong><em>Perfil seleccionado</em></div></article>
+          <article class="indicador"><span>◉</span><div><small>Base de datos</small><strong id="estadoBase">—</strong><em>SQLite local</em></div></article>
+          <article class="indicador"><span>✓</span><div><small>Comprobaciones</small><strong id="contadorPruebas">—</strong><em>Última ejecución</em></div></article>
+          <article class="indicador"><span>◷</span><div><small>Operaciones</small><strong id="contadorOperaciones">—</strong><em>Bitácora local</em></div></article>
+        </section>
+        <section class="rejilla-dos">
+          <article id="implantacion" class="tarjeta">
+            <div class="tarjeta-cabecera"><h3>Implantación de módulos</h3><span class="insignia azul">RA2</span></div>
+            <p class="texto-secundario">Selecciona el supuesto empresarial. El instalador registra la configuración y activa solo los módulos necesarios.</p>
+            <div class="perfiles">
+              <button class="perfil" data-perfil="soporte"><strong>Soporte técnico</strong><span>CRM · Soporte · Inventario</span><small>Para gestionar clientes, incidencias y equipos.</small></button>
+              <button class="perfil" data-perfil="comercial"><strong>Comercial</strong><span>CRM · Ventas · Facturación</span><small>Para presupuestos, pedidos y cobros.</small></button>
+            </div>
+            <p id="mensaje" class="estado-texto" role="status">Conectando con el instalador…</p>
+          </article>
+          <article class="tarjeta">
+            <div class="tarjeta-cabecera"><h3>Verificación del sistema</h3><button id="botonVerificar" class="boton-secundario">Ejecutar prueba</button></div>
+            <ul id="pruebas" class="lista-pruebas"><li class="pendiente">Aún no se han ejecutado las comprobaciones.</li></ul>
+          </article>
+        </section>
+        <section id="modulos" class="tarjeta">
+          <div class="tarjeta-cabecera"><div><h3>Módulos instalados</h3><p class="texto-secundario">Vista del perfil que tendría disponible la organización.</p></div><span id="perfilActual" class="insignia neutra">Sin perfil</span></div>
+          <div id="listaModulos" class="rejilla-modulos"><p class="pendiente">No hay módulos activados.</p></div>
+        </section>
+        <section class="tarjeta">
+          <div class="tarjeta-cabecera"><h3>Operaciones realizadas</h3><span class="texto-secundario">Registro de instalación</span></div>
+          <div class="tabla-contenedor"><table><thead><tr><th>Acción</th><th>Detalle</th><th>Momento</th></tr></thead><tbody id="operaciones"><tr><td colspan="3" class="pendiente">Sin operaciones registradas.</td></tr></tbody></table></div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script src="aplicacion.js"></script>
 </body>
 </html>
